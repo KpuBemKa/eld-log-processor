@@ -5,12 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Current File",
-      "type": "python",
-      "request": "launch",
-      "program": "./main.py",
-      "console": "integratedTerminal",
-      "justMyCode": true
+      "name": "Python",
+        "type": "python",
+        "request": "launch",
+        "stopOnEntry": false,
+        "program": "./main.py",
+        "cwd": "${workspaceFolder}",
+        "env": {},
+        "envFile": "${workspaceFolder}/.env"
     }
   ]
 }

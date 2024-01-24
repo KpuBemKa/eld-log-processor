@@ -7,6 +7,14 @@ from modules.tcp_server.server import TCPServer
 def worker():
     TCPServer().run()
 
-if __name__ == "__main__":
+
+def main():
     p = multiprocessing.Process(target=worker)
     p.start()
+    
+    while True:
+        pass
+
+
+if __name__ == "__main__":
+    main()

@@ -43,7 +43,7 @@ class WebsocketServer:
                     connection.send(result)
 
             except socket.error:
-                print("Error Occured.")
+                print("Error Occured: ", socket.error)
                 break
 
         connection.close()
