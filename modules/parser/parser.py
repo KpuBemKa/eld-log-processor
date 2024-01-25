@@ -4,15 +4,17 @@ import re
 
 from modules.processing.processing import Processing
 from .packet_parser import PacketParser
-from .response import Response
+from .response.response import Response
 
 
 class Parser:
     _connection = None
     _addr = None
 
-    _parsed_packets: list[dict] = [{}]
+    _parsed_packets: list[dict] = []
     _last_incomplete_packet: bytes = b""
+
+    _processing = Processing()
 
     def __init__(self, connection, addr) -> None:
         self._connection = connection
@@ -29,14 +31,11 @@ class Parser:
                 # parse raw binary data into parsed packets in form of dictionaries
                 self.__data_to_packets(data)
 
-                # process packets
-                self.__process_packets()
-
                 # respond back to the ELD
                 self.__respond_back()
 
-                # empty the list of packets
-                self._parsed_packets = [{}]
+                # process packets
+                self.__process_packets()
 
             except socket.error as e:
                 print("Socket error occured: ", e, e.args)
@@ -45,6 +44,9 @@ class Parser:
             except Exception as e:
                 print("Exception occured: ", e, e.args)
                 break
+
+            # empty the list of packets
+            self._parsed_packets = []
 
         self._connection.close()
 
@@ -55,9 +57,13 @@ class Parser:
 
         for raw_packet in raw_packets:
             packet = PacketParser(raw_packet).parse().get_result()
+            
+            if packet is None:
+                continue
+            
             self._parsed_packets.append(packet)
 
-            print("Hex:\n", binascii.hexlify(bytearray(raw_packet)))
+            # print("Hex:\n", binascii.hexlify(bytearray(raw_packet)))
             print("Parsed:\n", packet)
 
         print("\n\n")
@@ -91,7 +97,7 @@ class Parser:
 
     def __process_packets(self):
         for packet in self._parsed_packets:
-            Processing(packet).process()
+            self._processing.process(packet)
 
     def __respond_back(self):
         for packet in self._parsed_packets:

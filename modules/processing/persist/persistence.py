@@ -28,11 +28,12 @@ class Persistence:
         return self
 
     def send(self):
-        requests.post(
-            "https://127.0.0.1:8000/api/system/monitoring/v1/log/",
-            data=self.result,
-            verify=False,
-        )
+        # requests.post(
+        #     "https://127.0.0.1:8000/api/system/monitoring/v1/log/",
+        #     data=self.result,
+        #     verify=False,
+        # )
+        print("Sending data to localhost:8000:\n", self.result)
 
     def calculateEventCode(self):
         if self.data["header"]["protocol_id"] == "4009":

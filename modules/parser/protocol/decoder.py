@@ -19,11 +19,11 @@ class Decoder:
             .get_result()
         )
 
-        print("Device id: ", self.response["header"]["device_id"].decode())
+        # print("Device id: ", self.response["header"]["device_id"].decode())
 
-        self.response["payload"]["device_id"] = (
-            self.response["header"]["device_id"].decode().rstrip("\x00")
-        )
+        # self.response["payload"]["device_id"] = (
+        #     self.response["header"]["device_id"].decode().rstrip("\x00")
+        # )
 
     def execute(self):
         self.header()

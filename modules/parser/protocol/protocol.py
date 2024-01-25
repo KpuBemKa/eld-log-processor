@@ -1,5 +1,5 @@
 from .decoder import Decoder
-from ..response import Response
+from ..response.response import Response
 from modules.processing.processing import Processing
 
 
@@ -17,7 +17,7 @@ class Protocol:
         return self
 
     def processing(self):
-        Processing(self.data).process()
+        Processing().process(self.data)
         return self
 
     def encode(self):
@@ -26,7 +26,7 @@ class Protocol:
         return response
 
     def additional(self):
-        if Processing(self.data).additional_check() is False:
+        if Processing().additional_check(self.data) is False:
             Response(self.connection, self.data).make()
 
     def set_data(self, data):

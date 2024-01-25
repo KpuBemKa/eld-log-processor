@@ -15,11 +15,11 @@ class HeaderResponse:
         self.model.protocol_version = bytes.fromhex(
             self.data["header"]["protocol_version"]
         )
-        self.model.device_id = self.data["header"]["device_id"]
+        self.model.device_id = self.data["header"]["device_id_bin"]
         self.model.protocol_id = bytes.fromhex(protocol)
         self.model.crc = self.get_crc(payload)
         self.model.crc = int(self.model.crc).to_bytes(2, "little")
-        self.model.protocol_tail = bytes.fromhex(self.data["header"]["protocol_tail"])
+        self.model.protocol_tail = bytes.fromhex(self.data["trailer"]["protocol_tail"])
         return (
             self.model.protocol_head
             + self.model.protocol_length

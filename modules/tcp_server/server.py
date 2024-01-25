@@ -31,29 +31,29 @@ class TCPServer:
         
         # return    
         
-        while True:
-            try:
-                data = connection.recv(1024)
+        # while True:
+        #     try:
+        #         data = connection.recv(1024)
 
-                if not data:
-                    break
+        #         if not data:
+        #             break
 
-                # todo: merge messages without endings and separate by character \r\n
+        #         # todo: merge messages without endings and separate by character \r\n
                 
-                print("Received some data:")
+        #         print("Received some data:")
 
-                result = Protocol(addr).decode(data).processing().encode()
+        #         result = Protocol(addr).decode(data).processing().encode()
 
-                if result is not None:
-                    print("Response: ", result)
-                    connection.send(result)
+        #         if result is not None:
+        #             print("Response: ", result)
+        #             connection.send(result)
 
-            except socket.error:
-                print("Error Occured: ", socket.error)
-                break
+        #     except socket.error:
+        #         print("Error Occured: ", socket.error)
+        #         break
             
-            except Exception as e:
-                print("Exception occured: ", e, e.args)
-                break
+        #     except Exception as e:
+        #         print("Exception occured: ", e, e.args)
+        #         break
 
-        connection.close()
+        # connection.close()

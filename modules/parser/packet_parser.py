@@ -4,10 +4,9 @@ from .decoder.payload_decoder import PayloadDecoder
 
 
 class PacketParser:
-    __parsed = {}
-
     def __init__(self, raw_packet) -> None:
         self._raw_packet = raw_packet
+        self.__parsed = {}
 
     def parse(self) -> "PacketParser":
         self.__parsed["header"] = HeaderDecoder(self._raw_packet).decode().get_model()
@@ -15,6 +14,10 @@ class PacketParser:
 
         if not self.__verify_ends():
             self.__parsed = None
+            return self
+
+        if not self.__verify_length():
+            self._parsed = None
             return self
 
         if not self.__verify_crc():
@@ -26,6 +29,10 @@ class PacketParser:
             .decode()
             .get_result()
         )
+
+        # self.__parsed["payload"]["device_id"] = (
+        #     self.__parsed["header"]["device_id"].decode().rstrip("\x00")
+        # )
 
         return self
 
@@ -40,6 +47,13 @@ class PacketParser:
             return False
 
         return True
+
+    def __verify_length(self) -> bool:
+        # integer_value = int.from_bytes(
+        #     bytes.fromhex(self.__parsed["header"]["protocol_length"]),
+        #     byteorder="little",
+        # )
+        return len(self._raw_packet) == self.__parsed["header"]["protocol_length"]
 
     def __verify_crc(self) -> bool:
         # to do

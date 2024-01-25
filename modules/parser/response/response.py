@@ -1,7 +1,7 @@
-from .response.main_1001 import Main1001Response
-from .response.main_C007 import MainC007Response
-from .response.request_2002 import Request2002
-from .response.header import HeaderResponse
+from .main_1001 import Main1001Response
+from .main_C007 import MainC007Response
+from .request_2002 import Request2002
+from .header import HeaderResponse
 
 
 class Response:
