@@ -1,7 +1,7 @@
 import socket
 import _thread
 from modules.parser.protocol.protocol import Protocol
-from modules.parser.parser import Parser
+from modules.parser.parser import ConnectionManager
 # from modules.parser.decoder.header_decoder import HeaderDecoder
 
 
@@ -19,6 +19,8 @@ class TCPServer:
         print(self.host, self.port)
 
     def run(self):
+        ConnectionManager(connection=None, addr=None).run()
+
         while True:
             connection, addr = self.socket.accept()
             print("Connected by", addr)
@@ -27,10 +29,10 @@ class TCPServer:
         self.socket.close()
 
     def run_thread(self, connection, addr):
-        Parser(connection=connection, addr=addr).run()    
-        
-        # return    
-        
+        ConnectionManager(connection=connection, addr=addr).run()
+
+        # return
+
         # while True:
         #     try:
         #         data = connection.recv(1024)
@@ -39,7 +41,7 @@ class TCPServer:
         #             break
 
         #         # todo: merge messages without endings and separate by character \r\n
-                
+
         #         print("Received some data:")
 
         #         result = Protocol(addr).decode(data).processing().encode()
@@ -51,7 +53,7 @@ class TCPServer:
         #     except socket.error:
         #         print("Error Occured: ", socket.error)
         #         break
-            
+
         #     except Exception as e:
         #         print("Exception occured: ", e, e.args)
         #         break

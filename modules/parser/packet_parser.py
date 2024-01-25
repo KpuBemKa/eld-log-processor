@@ -4,57 +4,39 @@ from .decoder.payload_decoder import PayloadDecoder
 
 
 class PacketParser:
-    def __init__(self, raw_packet) -> None:
-        self._raw_packet = raw_packet
-        self.__parsed = {}
+    _raw_packets: list[bytes]
+    _parsed_packets: list[dict]
+
+    def __init__(self, raw_packets: list[bytes]) -> None:
+        self._raw_packets = raw_packets
 
     def parse(self) -> "PacketParser":
-        self.__parsed["header"] = HeaderDecoder(self._raw_packet).decode().get_model()
-        self.__parsed["trailer"] = TrailerDecoder(self._raw_packet).decode().get_model()
+        for raw_packet in self._raw_packets:
+            parsed = self.__parse_packet(raw_packet)
 
-        if not self.__verify_ends():
-            self.__parsed = None
-            return self
-
-        if not self.__verify_length():
-            self._parsed = None
-            return self
-
-        if not self.__verify_crc():
-            self.__parsed = None
-            return self
-
-        self.__parsed["payload"] = (
-            PayloadDecoder(self.__parsed["header"]["protocol_id"], self._raw_packet)
-            .decode()
-            .get_result()
-        )
-
-        # self.__parsed["payload"]["device_id"] = (
-        #     self.__parsed["header"]["device_id"].decode().rstrip("\x00")
-        # )
+            if parsed:
+                self._parsed_packets.append(parsed)
 
         return self
 
-    def get_result(self):
-        return self.__parsed
+    def get_result(self) -> list[dict]:
+        return self._parsed_packets
 
-    def __verify_ends(self) -> bool:
-        if self.__parsed["header"]["protocol_head"] != "4040":
-            return False
+    def __parse_packet(self, raw_packet: bytes) -> dict | None:
+        parsed_packet = {}
 
-        if self.__parsed["trailer"]["protocol_tail"] != "0d0a":
-            return False
+        parsed_packet["header"] = HeaderDecoder(raw_packet).decode().get_model()
+        parsed_packet["trailer"] = TrailerDecoder(raw_packet).decode().get_model()
 
-        return True
+        if not self.__verify_crc(raw_packet):
+            return self
 
-    def __verify_length(self) -> bool:
-        # integer_value = int.from_bytes(
-        #     bytes.fromhex(self.__parsed["header"]["protocol_length"]),
-        #     byteorder="little",
-        # )
-        return len(self._raw_packet) == self.__parsed["header"]["protocol_length"]
+        parsed_packet["payload"] = (
+            PayloadDecoder(self.__parsed["header"]["protocol_id"], raw_packet).decode().get_result()
+        )
 
-    def __verify_crc(self) -> bool:
+        return parsed_packet
+
+    def __verify_crc(self, raw_packet: bytes) -> bool:
         # to do
         return True
