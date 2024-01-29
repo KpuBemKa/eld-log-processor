@@ -12,6 +12,6 @@ class RedisRealtime(RedisMain):
 
     def set_gps_data(self):
         self.chanel_push(
-            "eld:realtime:gps:" + self.data["payload"]["device_id"],
+            "eld:realtime:gps:" + self.data["header"]["device_id"],
             json.dumps(self.data["payload"]["gps_data"]["gps_data"]),
         )

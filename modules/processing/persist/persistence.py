@@ -1,5 +1,6 @@
 import requests
 
+LOG_LINK = "https://dev.hgrs.us/api/system/monitoring/v1/log/"
 # LOG = 'https://127.0.0.1:8000/api/system/monitoring/v1/log/'
 # ALERT = 'https://127.0.0.1:8000/api/system/monitoring/v1/alert/'
 
@@ -10,15 +11,13 @@ class Persistence:
     def __init__(self, data):
         self.data = data
 
-    def populate(self):
+    def populate(self, event_type, event_code):
         self.result = {
             "device_id": self.data["header"]["device_id"],
-            "event_type": self.calculateEventType(),
-            "event_code": self.calculateEventCode(),
+            "event_type": event_type,
+            "event_code": event_code,
             "timestamp": self.getTimestamp(),
-            "accumulated_miles": self.data["payload"]["stat_data"][
-                "current_trip_mileage"
-            ],
+            "accumulated_miles": self.data["payload"]["stat_data"]["current_trip_mileage"],
             "accumulated_hours": 1,
             "latitude": self.getGeo("latitude"),
             "longitude": self.getGeo("longitude"),
@@ -28,12 +27,13 @@ class Persistence:
         return self
 
     def send(self):
-        # requests.post(
-        #     "https://127.0.0.1:8000/api/system/monitoring/v1/log/",
-        #     data=self.result,
-        #     verify=False,
-        # )
-        print("Sending data to localhost:8000:\n", self.result)
+        requests.post(
+            LOG_LINK,
+            data=self.result,
+            verify=False,
+        )
+        print("Sending data to database:\n", self.result)
+        # pass
 
     def calculateEventCode(self):
         if self.data["header"]["protocol_id"] == "4009":

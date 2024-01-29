@@ -1,3 +1,6 @@
+from modules.processing.processing import Processing
+
+
 class PacketProcessor:
     _parsed_packets: list[dict]
 
@@ -5,4 +8,5 @@ class PacketProcessor:
         self._parsed_packets = parsed_packets
 
     def process(self) -> "PacketProcessor":
-        return self
+        for packet in self._parsed_packets:
+            Processing().process(packet)

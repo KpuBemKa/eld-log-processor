@@ -1,11 +1,11 @@
-from .decoder.trailer_decoder import TrailerDecoder
-from .decoder.header_decoder import HeaderDecoder
-from .decoder.payload_decoder import PayloadDecoder
+from modules.decoder.trailer_decoder import TrailerDecoder
+from modules.decoder.header_decoder import HeaderDecoder
+from modules.decoder.payload_decoder import PayloadDecoder
 
 
 class PacketParser:
-    _raw_packets: list[bytes]
-    _parsed_packets: list[dict]
+    _raw_packets: list[bytes] = []
+    _parsed_packets: list[dict] = []
 
     def __init__(self, raw_packets: list[bytes]) -> None:
         self._raw_packets = raw_packets
@@ -32,7 +32,7 @@ class PacketParser:
             return self
 
         parsed_packet["payload"] = (
-            PayloadDecoder(self.__parsed["header"]["protocol_id"], raw_packet).decode().get_result()
+            PayloadDecoder(parsed_packet["header"]["protocol_id"], raw_packet).decode().get_result()
         )
 
         return parsed_packet

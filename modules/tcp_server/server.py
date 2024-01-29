@@ -1,8 +1,9 @@
 import socket
-import _thread
-from modules.parser.protocol.protocol import Protocol
-from modules.parser.parser import ConnectionManager
-# from modules.parser.decoder.header_decoder import HeaderDecoder
+import threading
+
+from modules.protocol.protocol import Protocol
+from modules.parser.conn_manager import ConnectionManager
+# from modules.decoder.header_decoder import HeaderDecoder
 
 
 class TCPServer:
@@ -19,43 +20,45 @@ class TCPServer:
         print(self.host, self.port)
 
     def run(self):
-        ConnectionManager(connection=None, addr=None).run()
+        # ConnectionManager(connection=None, addr=None).run()
 
         while True:
             connection, addr = self.socket.accept()
+            
             print("Connected by", addr)
-            _thread.start_new_thread(self.run_thread, (connection, addr))
+            
+            conn_manager = ConnectionManager(connection=connection, addr=addr)
+            thread = threading.Thread(target=conn_manager.run)
+            thread.start()
 
         self.socket.close()
 
-    def run_thread(self, connection, addr):
-        ConnectionManager(connection=connection, addr=addr).run()
-
+    def __run_thread(self, connection, addr):
         # return
 
-        # while True:
-        #     try:
-        #         data = connection.recv(1024)
+        while True:
+            try:
+                data = connection.recv(1024)
 
-        #         if not data:
-        #             break
+                if not data:
+                    break
 
-        #         # todo: merge messages without endings and separate by character \r\n
+                # todo: merge messages without endings and separate by character \r\n
 
-        #         print("Received some data:")
+                print("Received some data:")
 
-        #         result = Protocol(addr).decode(data).processing().encode()
+                result = Protocol(addr).decode(data).processing().encode()
 
-        #         if result is not None:
-        #             print("Response: ", result)
-        #             connection.send(result)
+                if result is not None:
+                    print("Response: ", result)
+                    connection.send(result)
 
-        #     except socket.error:
-        #         print("Error Occured: ", socket.error)
-        #         break
+            except socket.error:
+                print("Error Occured: ", socket.error)
+                break
 
-        #     except Exception as e:
-        #         print("Exception occured: ", e, e.args)
-        #         break
+            except Exception as e:
+                print("Exception occured: ", e, e.args)
+                break
 
-        # connection.close()
+        connection.close()

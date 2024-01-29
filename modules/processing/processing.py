@@ -18,7 +18,7 @@ class Processing:
 
         self.realtime_data()
         self.storage_data()
-        self.persist_data()
+        # self.persist_data()
         self.events_data()
 
     def realtime_data(self):
