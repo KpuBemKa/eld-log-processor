@@ -3,26 +3,20 @@
 """
 
 To do event types:
-- Logout
-- Login  
-- Engine Power-up w/ CLP (Engine Power-up with conventional location precision)
-- Engine Shut-down w/ CLP
-- Engine Power-up w/ RLP  (Engine Power-up with reduced location precision)
-- Engine Shut-Down w/ RLP
-- On Duty  
-- Driving
-- Sleeper
-- Off Duty                    
-- YM
-- PC
-- PC/YM Cleared
-- Certification 1 - 9       
-- Intermediate w/ CLP     ( Intermediate log with conventional location precision)
-- Intermediate w/ RLP   (Intermediate log with reduced location precision)
-- Power data diagnostic (cleared)
-- Power data diagnostic
-- ELD malfunction
-- ELD Malfunction cleared
+- Driver assignment 
+- Engine Power-up & Shut-down (always marked as with max location precision)
+- Driver status: [
+    Driving,
+    On Duty,
+    Off Duty,
+    Sleeping,
+    YM (weather factor),
+    PC (personal use),
+    PC/YM Cleared
+]
+- Intermediate log once per hour of Driving (always marked as with max location precision)
+- Power data diagnostic & Power data diagnostic cleared
+- ELD malfunction & ELD Malfunction cleared
 
 Done event types:
 

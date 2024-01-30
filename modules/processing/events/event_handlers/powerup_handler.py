@@ -37,18 +37,10 @@ class DrivingHandler(BaseHandler):
         return None
 
     def __get_event_code(self, is_ignition_on):
-        gps_data_present = "gps_data" in self._data["payload"]
-
         if is_ignition_on:
-            if gps_data_present:
-                return 1
-            else:
-                return 2
+            return 1 # Engine power-up with conventional location precision
         else:
-            if gps_data_present:
-                return 3
-            else:
-                return 4
+            return 3 # Engine shut-down with conventional location precision
 
     # def __make_message(self, is_ignition_on):
     #     if "GPS_Data" in self._data["payload"]:

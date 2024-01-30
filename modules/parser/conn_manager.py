@@ -16,7 +16,7 @@ CONNECTION_END_TIMEOUT = 900.0  # 60.0 * 15 = 15 minutes
 
 
 class ConnectionManager:
-    _stopwatch = Stopwatch()
+    # _stopwatch = Stopwatch()
 
     _addr = None
     _connection = None
@@ -39,23 +39,27 @@ class ConnectionManager:
 
         try:
             # stopwatch is reset when data is received
-            self._stopwatch.start()
+            # self._stopwatch.start()
 
             receiver_thread.start()
             extractor_thread.start()
             processor_thread.start()
 
-            while True:
+            receiver_thread.join()
+            extractor_thread.join()
+            processor_thread.join()
+
+            # while True:
                 # if no data has been received for `15` minutes, stop the stopwatch
-                if self._stopwatch.get_elapsed() > CONNECTION_END_TIMEOUT:
-                    self._stopwatch.stop()
+                # if self._stopwatch.get_elapsed() > CONNECTION_END_TIMEOUT:
+                #     self._stopwatch.stop()
 
                 # if stopwatch has been stopped, exit from the loop, and close the connection
                 # stopwatch can be stopped from other sources;
                 # for example, when a logout packet has been received
-                if self._stopwatch.has_stopped():
-                    print("Stopwatch has been stopped.")
-                    break
+                # if self._stopwatch.has_stopped():
+                #     print("Stopwatch has been stopped.")
+                #     break
         except socket.error as e:
             print("Socket error: ", e, e.args)
         except Exception as e:
@@ -91,7 +95,7 @@ class ConnectionManager:
                 if not received_data:
                     continue
 
-                self._stopwatch.reset()
+                # self._stopwatch.reset()
 
                 with self._data_lock:
                     self._data.extend(received_data)
@@ -139,7 +143,7 @@ class ConnectionManager:
                 responses = []
                 responses.extend(PacketResponder(parsed_packets).make_responses())
                 responses.extend(PacketRequester(parsed_packets).make_requests())
-                
+
                 with self._conn_lock:
                     for response in responses:
                         self._connection.send(response)
