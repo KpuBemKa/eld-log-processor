@@ -2,28 +2,21 @@ import socket
 import threading
 import time
 
-from .stopwatch import Stopwatch
 from .packet_parser import PacketParser
 from .packet_responder import PacketResponder
 from .packet_processor import PacketProcessor
 from .packet_requester import PacketRequester
 # from .response.response import Response
 
-# tried to do it with the regex but it's not reliable enough; payload can contain '\r\n', for example
 PACKET_START = b"\x40\x40"  # @@
 PACKET_END = b"\x0D\x0A"  # \r\n
-CONNECTION_END_TIMEOUT = 900.0  # 60.0 * 15 = 15 minutes
 
 
 class ConnectionManager:
-    # _stopwatch = Stopwatch()
-
     _addr = None
     _connection = None
-    _conn_lock = threading.Lock()
 
     _data = bytearray(b"")
-    _data_lock = threading.Lock()
 
     _raw_packets = []
     _raw_packets_lock = threading.Lock()
@@ -34,32 +27,14 @@ class ConnectionManager:
 
     def run(self) -> None:
         receiver_thread = threading.Thread(target=self.__data_receiver, daemon=True)
-        extractor_thread = threading.Thread(target=self.__packet_extractor, daemon=True)
         processor_thread = threading.Thread(target=self.__packet_processor, daemon=True)
 
         try:
-            # stopwatch is reset when data is received
-            # self._stopwatch.start()
-
             receiver_thread.start()
-            extractor_thread.start()
             processor_thread.start()
 
             receiver_thread.join()
-            extractor_thread.join()
             processor_thread.join()
-
-            # while True:
-                # if no data has been received for `15` minutes, stop the stopwatch
-                # if self._stopwatch.get_elapsed() > CONNECTION_END_TIMEOUT:
-                #     self._stopwatch.stop()
-
-                # if stopwatch has been stopped, exit from the loop, and close the connection
-                # stopwatch can be stopped from other sources;
-                # for example, when a logout packet has been received
-                # if self._stopwatch.has_stopped():
-                #     print("Stopwatch has been stopped.")
-                #     break
         except socket.error as e:
             print("Socket error: ", e, e.args)
         except Exception as e:
@@ -69,61 +44,25 @@ class ConnectionManager:
         print("Connection on port `", self._addr, "` has been terminated.")
 
     def __data_receiver(self):
-        # data_sim = [
-        #     b"@@Data for @section 1\r\n@@Data for sect",
-        #     b"ion 2\r\n@@Data for section 3\r\n@@Data f",
-        #     b"or section 4\r\n",
-        # ]
-        # data_sim = [
-        #     bytearray.fromhex("4040330002000102030405060708090a0b0c0d0e0f101112"),
-        #     bytearray.fromhex("130102000102030405060708090a0b0c0d0e0f1011121303040d0a"),
-        #     bytearray.fromhex(
-        #         "4040350002000102030405060708090a0b0c0d0e0f101112130102000102030405060708090a0b0c0d0e0f101112130304abcd0d0a"
-        #     ),
-        # ]
-        # index = 0
-
         while True:
             try:
-                # if index == len(data_sim):
-                # break
-                with self._conn_lock:
-                    received_data = self._connection.recv(1024)
-                # received_data = data_sim[index]
-                # index += 1
+                received_data = self._connection.recv(1024)
 
                 if not received_data:
+                    break
+
+                self._data.extend(received_data)
+
+                packets = self.__extract_all_packets()
+                if not packets:
                     continue
 
-                # self._stopwatch.reset()
-
-                with self._data_lock:
-                    self._data.extend(received_data)
+                with self._raw_packets_lock:
+                    self._raw_packets.extend(packets)
             except socket.error as e:
                 raise e
             except Exception as e:
                 print("Exception during data receiving: ", e, e.args)
-
-    def __packet_extractor(self):
-        # Continuously read from the data queue, extract packets, and remove them
-        while True:
-            try:
-                time.sleep(0.5)
-
-                with self._data_lock:
-                    # data = self._data_queue.get()
-                    # if not data:
-                    #     continue
-
-                    # packets = re.findall(PACKET_REGEX, self._data)
-                    packets = self.__extract_all_packets()
-                    if not packets:
-                        continue
-
-                with self._raw_packets_lock:
-                    self._raw_packets.extend(packets)
-            except Exception as e:
-                print("Error during packet extraction: ", e, e.args)
 
     def __packet_processor(self):
         while True:
