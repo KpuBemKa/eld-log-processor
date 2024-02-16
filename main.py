@@ -4,7 +4,6 @@
 
 To do event types:
 - Driver assignment 
-- Engine Power-up & Shut-down (always marked as with max location precision)
 - Driver status: [
     Driving,
     On Duty,
@@ -19,6 +18,7 @@ To do event types:
 - ELD malfunction & ELD Malfunction cleared
 
 Done event types:
+- Engine Power-up & Shut-down (always marked as with max location precision)
 
 
 """

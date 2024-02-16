@@ -8,9 +8,9 @@ class RedisRealtime(RedisMain):
     def process(self, data):
         self.data = data
         if "gps_data" in self.data["payload"]:
-            self.set_gps_data()
+            self.publish_gps_data()
 
-    def set_gps_data(self):
+    def publish_gps_data(self):
         self.chanel_push(
             "eld:realtime:gps:" + self.data["header"]["device_id"],
             json.dumps(self.data["payload"]["gps_data"]["gps_data"]),

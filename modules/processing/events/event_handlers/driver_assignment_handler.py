@@ -2,7 +2,7 @@ from .base_handler import BaseHandler
 
 from modules.processing.redis.redis_realtime import RedisRealtime
 
-DRIVER_KEY_HEADER = "current_driver"
+DRIVER_KEY_HEADER = "eld:current_driver"
 
 
 class DriverAssignmentHandler(BaseHandler):

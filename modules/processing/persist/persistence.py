@@ -33,7 +33,6 @@ class Persistence:
             verify=False,
         )
         print("Sending data to database:\n", self.result)
-        # pass
 
     def calculateEventCode(self):
         if self.data["header"]["protocol_id"] == "4009":

@@ -83,9 +83,8 @@ class ConnectionManager:
                 responses.extend(PacketResponder(parsed_packets).make_responses())
                 responses.extend(PacketRequester(parsed_packets).make_requests())
 
-                with self._conn_lock:
-                    for response in responses:
-                        self._connection.send(response)
+                for response in responses:
+                    self._connection.send(response)
 
                 PacketProcessor(parsed_packets).process()
 

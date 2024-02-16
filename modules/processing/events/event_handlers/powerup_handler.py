@@ -37,6 +37,7 @@ class DrivingHandler(BaseHandler):
         return None
 
     def __get_event_code(self, is_ignition_on):
+        # location precision should always be maximum
         if is_ignition_on:
             return 1 # Engine power-up with conventional location precision
         else:

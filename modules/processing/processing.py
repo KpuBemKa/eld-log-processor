@@ -4,6 +4,7 @@ from .redis.redis_realtime import RedisRealtime
 from modules.processing.persist.persistence import Persistence
 
 from .events.events import EventsProcessor
+from .storage.gps_handler import GpsHandler
 
 
 class Processing:
@@ -25,7 +26,7 @@ class Processing:
         RedisRealtime().process(self.data)
 
     def storage_data(self):
-        pass
+        GpsHandler().handle(self.data)
 
     def persist_data(self):
         if (

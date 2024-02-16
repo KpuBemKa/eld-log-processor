@@ -1,15 +1,16 @@
-from modules.processing.persist.persistence import Persistence
 from .base_handler import BaseHandler
-
-from modules.processing.redis.redis_realtime import RedisRealtime
+from modules.enums.duty_status import DutyStatus
+from modules.processing.persist.persistence import Persistence
+from modules.processing.redis.redis_main import RedisMain
+from modules.processing.persist.inter_log_sender import InterLogSender
 # from modules.processing.events.event_handlers.driver_handler import DriverAssignmentHandler
 
-STATUS_HEADER = "driver_status"
+STATUS_HEADER = "eld:driver_status"
 EVENT_TYPE = 1
 
 
 class DutyStatusHandler(BaseHandler):
-    _redis = RedisRealtime()
+    _redis = RedisMain()
     _data = None
 
     def handle(self, data) -> None:
@@ -24,6 +25,11 @@ class DutyStatusHandler(BaseHandler):
 
         if new_status == last_status:
             return
+
+        if new_status == DutyStatus.DRIVING:
+            self.__start_inter_logging()
+        else:
+            self.__stop_inter_logging()
 
         self.__set_last_status(device_id, new_status)
 
@@ -50,15 +56,15 @@ class DutyStatusHandler(BaseHandler):
     def __set_last_status(self, device_id, new_status):
         self._redis.set_key(STATUS_HEADER + ":" + device_id, new_status)
 
-    def __get_new_status(self, last_stauts):
+    def __get_new_status(self, last_statuts):
         if "duty status" in self._data["payload"]:
             return self._data["payload"]["duty status"]
 
         if not self.__is_speeding_raised():
             return None
 
-        if last_stauts == "on duty":
-            return "driving"
+        if last_statuts == DutyStatus.ON_DUTY:
+            return DutyStatus.DRIVING
         else:
             return None
 
@@ -67,23 +73,23 @@ class DutyStatusHandler(BaseHandler):
 
     def __get_event_code(self, new_status):
         match new_status:
-            case "off duty":
+            case DutyStatus.OFF_DUTY:
                 return 1
 
-            case "sleeping":
+            case DutyStatus.SLEEPING:
                 return 2
 
-            case "driving":
+            case DutyStatus.DRIVING:
                 return 3
 
-            case "on duty":
+            case DutyStatus.ON_DUTY:
                 return 4
-              
+
             case _:
                 return 0
 
-    def __make_message(self, new_status):
-        timestamp = self._data["payload"]["stat_data"]["UTC_Time"]
-        device_id = self._data["header"]["device_id"]
+    def __start_inter_logging(self):
+        InterLogSender().add_device_id(device_id=self._data["header"]["device_id"])
 
-        return {}.extend([timestamp.__dict__, device_id.__dict__, new_status.__dict__])
+    def __stop_inter_logging(self):
+        InterLogSender().remove_device_id(device_id=self._data["header"]["device_id"])
