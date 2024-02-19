@@ -25,13 +25,16 @@ class PacketParser:
     def __parse_packet(self, raw_packet: bytes) -> dict | None:
         parsed_packet = {}
 
+        # parse the header
         parsed_packet["header"] = HeaderDecoder(raw_packet).decode().get_model()
+        # parse the trailer/tail/footer
         parsed_packet["trailer"] = TrailerDecoder(raw_packet).decode().get_model()
 
         if not self.__verify_crc(raw_packet):
-            return self
+            return None
 
         parsed_packet["payload"] = (
+            # parse the paylaod
             PayloadDecoder(parsed_packet["header"]["protocol_id"], raw_packet).decode().get_result()
         )
 
