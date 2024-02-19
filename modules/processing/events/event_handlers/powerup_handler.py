@@ -8,7 +8,7 @@ KEY_HEADER = "is_engine_running"
 EVENT_TYPE = 6
 
 
-class DrivingHandler(BaseHandler):
+class PowerupHandler(BaseHandler):
     _redis = RedisRealtime()
 
     def handle(self, data) -> None:

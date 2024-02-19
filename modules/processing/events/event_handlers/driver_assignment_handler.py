@@ -22,7 +22,7 @@ class DriverAssignmentHandler(BaseHandler):
         
         print("EVENT: Driver", driver_id, "has been assigned to", device_id)
         
-    def get_driver_id_from_db(self, device_id):
+    def __get_driver_id_from_db(self, device_id):
         return self._redis.get_key(DRIVER_KEY_HEADER + ":" + device_id)
         
     def __get_driver_id_from_data(self):
@@ -37,7 +37,7 @@ class DriverAssignmentHandler(BaseHandler):
         return None
 
     def __has_driver_changed(self, device_id, driver_id):
-        last_device_driver = self.get_driver_id_from_db(device_id)
+        last_device_driver = self.__get_driver_id_from_db(device_id)
         
         return last_device_driver != driver_id
     

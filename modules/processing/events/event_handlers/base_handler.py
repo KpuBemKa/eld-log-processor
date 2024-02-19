@@ -4,5 +4,5 @@ from abc import ABC, abstractmethod
 
 class BaseHandler(ABC):
     @abstractmethod
-    def handle(self, data) -> None:
+    def handle(self, data: dict) -> None:
         pass

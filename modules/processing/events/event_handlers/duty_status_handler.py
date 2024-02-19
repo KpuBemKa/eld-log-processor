@@ -4,7 +4,8 @@ from modules.models.enums.duty_status import DutyStatus
 
 from modules.processing.persist.persistence import Persistence
 from modules.processing.redis.redis_main import RedisMain
-from modules.processing.persist.inter_log_sender import InterLogSender
+from modules.processing.persist.inter_log_sender import ScheduleManager
+from modules.processing.storage.gps_handler import GPS_DATA_HEADER
 # from modules.processing.events.event_handlers.driver_handler import DriverAssignmentHandler
 
 STATUS_HEADER = "eld:driver_status"
@@ -91,7 +92,9 @@ class DutyStatusHandler(BaseHandler):
                 return 0
 
     def __start_inter_logging(self):
-        InterLogSender().add_device_id(device_id=self._data["header"]["device_id"])
+        ScheduleManager().add_task(
+            task_name=self._data["header"]["device_id"],
+        )
 
     def __stop_inter_logging(self):
-        InterLogSender().remove_device_id(device_id=self._data["header"]["device_id"])
+        ScheduleManager().remove_device_id(device_id=self._data["header"]["device_id"])

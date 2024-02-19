@@ -3,7 +3,7 @@ from .redis.redis_realtime import RedisRealtime
 # from .socketio.socketio_realtime import SoketioRealtime
 from modules.processing.persist.persistence import Persistence
 
-from .events.events import EventsProcessor
+from .events.events_processor import EventsProcessor
 from .storage.gps_handler import GpsHandler
 
 

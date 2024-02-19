@@ -2,9 +2,10 @@
 
 """
 
-To do event types:
-- Driver assignment 
-- Driver status: [
+TODO event types:
++ Driver assignment -> uknown assignment protocol 
+
++ Driver status: [
     Driving,
     On Duty,
     Off Duty,
@@ -12,13 +13,16 @@ To do event types:
     YM (weather factor),
     PC (personal use),
     PC/YM Cleared
-]
-- Power data diagnostic & Power data diagnostic cleared
+] -> unknown duty status protocol
+
+- Power data diagnostic set & Power data diagnostic cleared
+
 - ELD malfunction & ELD Malfunction cleared
+
 
 Done event types:
 - Engine Power-up & Shut-down (always marked as with max location precision)
-- Intermediate log once per hour of Driving (always marked as with max location precision)
+- Intermediate log once per hour of DRIVING status active (always marked as with max location precision)
 
 
 """

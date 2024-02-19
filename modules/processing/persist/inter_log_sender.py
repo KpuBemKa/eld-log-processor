@@ -7,13 +7,13 @@ from modules.processing.redis.redis_main import RedisMain
 from modules.processing.storage.gps_handler import GPS_DATA_HEADER
 
 
-class InterLogSender(metaclass=SingletonMeta):
+class ScheduleManager(metaclass=SingletonMeta):
     _redis = RedisMain()
 
     _tasks = []
     _scheduler = sched.scheduler(time.monotonic, time.sleep)
 
-    def __init__(self) -> None:
+    def add_task(self, task_name:str, time_delay: float, executor: callable[[tuple], None], args: tuple):
         pass
 
     def add_device_id(self, device_id):
