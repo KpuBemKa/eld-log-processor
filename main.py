@@ -13,12 +13,12 @@ To do event types:
     PC (personal use),
     PC/YM Cleared
 ]
-- Intermediate log once per hour of Driving (always marked as with max location precision)
 - Power data diagnostic & Power data diagnostic cleared
 - ELD malfunction & ELD Malfunction cleared
 
 Done event types:
 - Engine Power-up & Shut-down (always marked as with max location precision)
+- Intermediate log once per hour of Driving (always marked as with max location precision)
 
 
 """

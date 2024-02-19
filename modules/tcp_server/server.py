@@ -1,9 +1,7 @@
 import socket
 import threading
 
-from modules.protocol.protocol import Protocol
-from modules.parser.conn_manager import ConnectionManager
-# from modules.decoder.header_decoder import HeaderDecoder
+from conn_manager import ConnectionManager
 
 
 class TCPServer:

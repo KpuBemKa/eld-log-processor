@@ -1,5 +1,7 @@
 from .base_handler import BaseHandler
-from modules.enums.duty_status import DutyStatus
+
+from modules.models.enums.duty_status import DutyStatus
+
 from modules.processing.persist.persistence import Persistence
 from modules.processing.redis.redis_main import RedisMain
 from modules.processing.persist.inter_log_sender import InterLogSender
