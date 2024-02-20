@@ -1,9 +1,7 @@
 import socket
 import threading
 
-from modules.protocol.protocol import Protocol
-from modules.parser.conn_manager import ConnectionManager
-# from modules.decoder.header_decoder import HeaderDecoder
+from conn_manager import ConnectionManager
 
 
 class TCPServer:
@@ -24,41 +22,11 @@ class TCPServer:
 
         while True:
             connection, addr = self.socket.accept()
-            
+
             print("Connected by", addr)
-            
+
             conn_manager = ConnectionManager(connection=connection, addr=addr)
             thread = threading.Thread(target=conn_manager.run)
             thread.start()
 
         self.socket.close()
-
-    def __run_thread(self, connection, addr):
-        # return
-
-        while True:
-            try:
-                data = connection.recv(1024)
-
-                if not data:
-                    break
-
-                # todo: merge messages without endings and separate by character \r\n
-
-                print("Received some data:")
-
-                result = Protocol(addr).decode(data).processing().encode()
-
-                if result is not None:
-                    print("Response: ", result)
-                    connection.send(result)
-
-            except socket.error:
-                print("Error Occured: ", socket.error)
-                break
-
-            except Exception as e:
-                print("Exception occured: ", e, e.args)
-                break
-
-        connection.close()

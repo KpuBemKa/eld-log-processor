@@ -1,9 +1,11 @@
 from .redis.redis_realtime import RedisRealtime
 
 # from .socketio.socketio_realtime import SoketioRealtime
-from modules.processing.persist.persistence import Persistence
+# from modules.processing.persist.persistence import Persistence
+from modules.processing.remote.remote import Remote
 
-from .events.events import EventsProcessor
+from .events.events_processor import EventsProcessor
+from .storage.gps_handler import GpsHandler
 
 
 class Processing:
@@ -25,14 +27,14 @@ class Processing:
         RedisRealtime().process(self.data)
 
     def storage_data(self):
-        pass
+        GpsHandler().handle(self.data)
 
     def persist_data(self):
         if (
             self.data["header"]["protocol_id"] == "4001"
             or self.data["header"]["protocol_id"] == "4009"
         ):
-            Persistence(self.data).populate().send()
+            Remote().construct_from_packet(packet=self.data, event_type=2, event_code=1).send()
 
     def additional_check(self, data):
         self.data = data

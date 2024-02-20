@@ -1,1 +1,9 @@
-{}
+{
+  "flake8.args": [
+    "--max-line-length=110"
+  ],
+  "flake8.cwd": "${workspaceFolder}",
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.autoImportCompletions": false,
+  "editor.tabSize": 4
+}

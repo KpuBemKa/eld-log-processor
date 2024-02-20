@@ -1,10 +1,8 @@
-# persistence.py, line 32: where data should be sent instead of localhost?
-
 """
 
-To do event types:
-- Driver assignment 
-- Engine Power-up & Shut-down (always marked as with max location precision)
+TODO event types:
+- Driver assignment -> uknown assignment protocol 
+
 - Driver status: [
     Driving,
     On Duty,
@@ -13,12 +11,20 @@ To do event types:
     YM (weather factor),
     PC (personal use),
     PC/YM Cleared
-]
-- Intermediate log once per hour of Driving (always marked as with max location precision)
-- Power data diagnostic & Power data diagnostic cleared
-- ELD malfunction & ELD Malfunction cleared
+] -> unknown duty status protocol
 
-Done event types:
+- ELD malfunction & ELD malfunction cleared -> unknown ELD malfunction protocol
+
+
+Done but not tested:
+- Engine Power-up & Shut-down (always marked as with max location precision)
+
+- Intermediate log once per hour of DRIVING status active (always marked as with max location precision)
+
+- Vehicle malfunction & Vehicle malfunction cleared
+
+
+Done and tested:
 
 
 """
