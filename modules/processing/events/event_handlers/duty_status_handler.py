@@ -2,14 +2,15 @@ from .base_handler import BaseHandler
 
 from modules.models.enums.duty_status import DutyStatus
 
-from modules.processing.persist.persistence import Persistence
+# from modules.processing.persist.persistence import Persistence
+from modules.processing.remote.remote import Remote
 from modules.processing.redis.redis_main import RedisMain
-from modules.processing.persist.inter_log_sender import ScheduleManager
+from modules.processing.remote.scheduler import ScheduleManager
 # from modules.processing.storage.gps_handler import GPS_DATA_HEADER
 # from modules.processing.events.event_handlers.driver_handler import DriverAssignmentHandler
 
 STATUS_HEADER = "eld:driver_status"
-EVENT_TYPE = 1
+DUTY_EVENT_TYPE = 1
 
 
 class DutyStatusHandler(BaseHandler):
@@ -36,7 +37,9 @@ class DutyStatusHandler(BaseHandler):
 
         self.__set_last_status(device_id, new_status)
 
-        Persistence(data).populate(EVENT_TYPE, self.__get_event_code(new_status)).send()
+        Remote().construct_from_packet(
+            packet=data, event_type=DUTY_EVENT_TYPE, event_code=self.__get_event_code(new_status)
+        ).send()
 
     def __is_alarm_packet(self):
         return self._data["header"]["protocol_id"] == "4007"
@@ -92,9 +95,9 @@ class DutyStatusHandler(BaseHandler):
                 return 0
 
     def __start_inter_logging(self):
-        ScheduleManager().add_task(
+        ScheduleManager().add_inter_log_task(
             task_name=self._data["header"]["device_id"],
         )
 
     def __stop_inter_logging(self):
-        ScheduleManager().remove_device_id(device_id=self._data["header"]["device_id"])
+        ScheduleManager().remove_inter_log_task(device_id=self._data["header"]["device_id"])

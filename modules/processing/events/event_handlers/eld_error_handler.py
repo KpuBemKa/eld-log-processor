@@ -1,9 +1,10 @@
-from modules.processing.persist.persistence import Persistence
+# from modules.processing.persist.persistence import Persistence
+from modules.processing.remote.remote import Remote
 from modules.processing.redis.redis_realtime import RedisRealtime
 
 
 REDIS_HEADER = "eld:eld_state"
-EVENT_TYPE = None
+ELD_ERR_EVENT_TYPE = None
 
 
 class EldErrorHandler:
@@ -29,11 +30,13 @@ class EldErrorHandler:
             print("UNKNOWN EVENT CODE FOR VSTATE")
             return
 
-        Persistence(data).populate(EVENT_TYPE, event_code).send()
+        Remote().construct_from_packet(
+            packet=data, event_type=ELD_ERR_EVENT_TYPE, event_code=event_code
+        ).send()
 
     def __does_packet_have_eld_state(self) -> bool:
         return False
-      
+
         if "stat_data" not in self._data["payload"]:
             return False
 
@@ -54,7 +57,7 @@ class EldErrorHandler:
 
     def __get_event_code(self, stored_vstate: dict, packet_vstate: dict) -> bool | None:
         return None
-        
+
         for id in stored_vstate:
             if stored_vstate[id] == packet_vstate[id]:
                 continue

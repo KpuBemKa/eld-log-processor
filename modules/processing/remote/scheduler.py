@@ -1,10 +1,18 @@
 import sched
 import time
 
+from remote import Remote
+
 from modules.singleton_meta import SingletonMeta
 
 from modules.processing.redis.redis_main import RedisMain
+
 from modules.processing.storage.gps_handler import GPS_DATA_HEADER
+from modules.processing.storage.gps_handler import GPS_STAMP_HEADER
+
+
+INTER_LOG_EVENT_TYPE = 2
+INTER_LOG_EVENT_CODE = 1
 
 
 class ScheduleManager(metaclass=SingletonMeta):
@@ -13,10 +21,7 @@ class ScheduleManager(metaclass=SingletonMeta):
     _tasks = []
     _scheduler = sched.scheduler(time.monotonic, time.sleep)
 
-    def add_task(self, task_name:str, time_delay: float, executor: callable[[tuple], None], args: tuple):
-        pass
-
-    def add_device_id(self, device_id):
+    def add_inter_log_task(self, device_id):
         """
         schedule a task to send device's latest gps data to the server after a delay of an hour
         """
@@ -27,7 +32,7 @@ class ScheduleManager(metaclass=SingletonMeta):
             }
         )
 
-    def remove_device_id(self, device_id):
+    def remove_inter_log_task(self, device_id):
         """
         cancel scheduled task
         """
@@ -39,12 +44,18 @@ class ScheduleManager(metaclass=SingletonMeta):
         """
         get latest gps data from the redis database, and send it
         """
-        gps_data = self._redis.get_key(GPS_DATA_HEADER + ":" + device_id)
-
         # schedule to send one more after an hour
-        self.add_device_id(device_id)
+        self.add_inter_log_task(device_id)
 
-        # PLACEHOLDER
-        print(f"Sending inter log for device_id:{device_id} to server: {gps_data}")
+        gps_data = self._redis.get_key(GPS_DATA_HEADER + ":" + device_id)
+        device_stamp = self._redis.get_key(GPS_STAMP_HEADER + ":" + device_id)
 
-        # Persistence(data).populate(EVENT_TYPE, self.__get_event_code(new_status)).send()
+        Remote().construct_data(
+            device_id=device_id,
+            event_type=INTER_LOG_EVENT_TYPE,
+            event_code=INTER_LOG_EVENT_CODE,
+            device_timestamp=device_stamp,
+            mileage=None,
+            latitude=gps_data["latitude"],
+            longitude=gps_data["longitude"],
+        ).send()

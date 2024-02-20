@@ -1,11 +1,9 @@
-# persistence.py, line 32: where data should be sent instead of localhost?
-
 """
 
 TODO event types:
-+ Driver assignment -> uknown assignment protocol 
+- Driver assignment -> uknown assignment protocol 
 
-+ Driver status: [
+- Driver status: [
     Driving,
     On Duty,
     Off Duty,
@@ -15,7 +13,7 @@ TODO event types:
     PC/YM Cleared
 ] -> unknown duty status protocol
 
-+ ELD malfunction & ELD malfunction cleared -> unknown ELD malfunction protocol
+- ELD malfunction & ELD malfunction cleared -> unknown ELD malfunction protocol
 
 
 Done but not tested:

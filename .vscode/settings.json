@@ -4,5 +4,6 @@
   ],
   "flake8.cwd": "${workspaceFolder}",
   "python.analysis.typeCheckingMode": "off",
-  "python.analysis.autoImportCompletions": false
+  "python.analysis.autoImportCompletions": false,
+  "editor.tabSize": 4
 }

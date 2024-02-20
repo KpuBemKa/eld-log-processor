@@ -1,9 +1,10 @@
-from modules.processing.persist.persistence import Persistence
+# from modules.processing.persist.persistence import Persistence
 from modules.processing.redis.redis_realtime import RedisRealtime
+from modules.processing.remote.remote import Remote
 
 
 REDIS_HEADER = "eld:vstate"
-EVENT_TYPE = 7
+VEHICLE_ERR_EVENT_TYPE = 7
 
 
 class VehicleErrorHandler:
@@ -29,7 +30,9 @@ class VehicleErrorHandler:
             print("UNKNOWN EVENT CODE FOR VSTATE")
             return
 
-        Persistence(data).populate(EVENT_TYPE, event_code).send()
+        Remote().construct_from_packet(
+            packet=data, event_type=VEHICLE_ERR_EVENT_TYPE, event_code=event_code
+        ).send()
 
     def __does_packet_have_vstatus(self) -> bool:
         if "stat_data" not in self._data["payload"]:

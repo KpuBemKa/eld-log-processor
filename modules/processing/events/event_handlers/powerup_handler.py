@@ -1,11 +1,13 @@
 from .base_handler import BaseHandler
 
 from modules.processing.redis.redis_realtime import RedisRealtime
-from modules.processing.persist.persistence import Persistence
+
+# from modules.processing.persist.persistence import Persistence
+from modules.processing.remote.remote import Remote
 
 
 KEY_HEADER = "is_engine_running"
-EVENT_TYPE = 6
+POWERUP_EVENT_TYPE = 6
 
 
 class PowerupHandler(BaseHandler):
@@ -21,7 +23,11 @@ class PowerupHandler(BaseHandler):
         if is_ignition_on is None:
             return
 
-        Persistence(data).populate(EVENT_TYPE, self.__get_event_code(is_ignition_on)).send()
+        Remote().construct_from_packet(
+            packet=data,
+            event_type=POWERUP_EVENT_TYPE,
+            event_code=self.__get_event_code(is_ignition_on),
+        ).send()
 
     def __is_alarm_packet(self):
         return self._data["header"]["protocol_id"] == "4007"
@@ -39,9 +45,9 @@ class PowerupHandler(BaseHandler):
     def __get_event_code(self, is_ignition_on):
         # location precision should always be maximum
         if is_ignition_on:
-            return 1 # Engine power-up with conventional location precision
+            return 1  # Engine power-up with conventional location precision
         else:
-            return 3 # Engine shut-down with conventional location precision
+            return 3  # Engine shut-down with conventional location precision
 
     # def __make_message(self, is_ignition_on):
     #     if "GPS_Data" in self._data["payload"]:
