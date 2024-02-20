@@ -11,9 +11,9 @@ EVENT_TYPE = 1
 
 
 # class GpsHandler(BaseHandler):
-class GpsHandler():
+class GpsHandler:
     _redis = RedisMain()
-    _data = None
+    _data: dict
 
     def handle(self, data) -> None:
         self._data = data
@@ -32,7 +32,7 @@ class GpsHandler():
             return
 
         self.__set_stored_stamp(packet_stamp)
-        self.__set_stored_gps(self._data["payload"]["gps_data"])
+        self.__set_stored_gps(self._data.payload["gps_data"])
 
     def __get_stored_stamp(self) -> int:
         value = self._redis.get_key(GPS_STAMP_HEADER + ":" + self._data["header"]["driver_id"])
@@ -44,19 +44,21 @@ class GpsHandler():
 
     def __get_packet_timestamp(self) -> int:
         if "stat_data" in self._data["payload"]:
-            return self._data["payload"]["stat_data"]["UTC_Time"]
+            return self._data.payload["stat_data"]["UTC_Time"]
 
         if "UTC_Time" in self._data["payload"]:
-            return self._data["payload"]["UTC_Time"]
-          
-        gps_data = self._data["payload"]["gps_data"]
+            return self._data.payload["UTC_Time"]
+
+        gps_data = self._data.payload["gps_data"]
         return calendar.timegm(
-            year=gps_data["date"]["year"],
-            month=gps_data["date"]["month"],
-            day=gps_data["date"]["day"],
-            hour=gps_data["time"]["hour"],
-            minute=gps_data["time"]["minute"],
-            second=gps_data["time"]["second"],
+            (
+                gps_data["date"]["year"],
+                gps_data["date"]["month"],
+                gps_data["date"]["day"],
+                gps_data["time"]["hour"],
+                gps_data["time"]["minute"],
+                gps_data["time"]["second"],
+            )
         )
 
     def __set_stored_stamp(self, new_stamp):

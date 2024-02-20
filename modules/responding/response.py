@@ -1,3 +1,5 @@
+from modules.models.packet.packet import PacketModel
+
 from response_1001 import Main1001Response
 from response_C007 import MainC007Response
 from response_C00C import MainC00CResponse
@@ -9,32 +11,31 @@ from header import HeaderResponse
 
 
 class Response:
-    # def __init__(self, connection, data):
-    #     self.data = data
-    #     self.connection = connection
-    def __init__(self, data: dict):
-        self.data = data
+    _packet: PacketModel
+    
+    def __init__(self, data: PacketModel):
+        self._packet = data
 
     def make(self):
-        match self.data["header"]["protocol_id"]:
+        match self._packet.header.protocol_id:
             case "1001":
                 payload = Main1001Response().make()
-                return HeaderResponse(self.data).make(payload, "9001")
+                return HeaderResponse(self._packet).make(payload, "9001")
 
             case "1003":
-                return HeaderResponse(self.data).make(b"", "9003")
+                return HeaderResponse(self._packet).make(b"", "9003")
 
             case "4007":
-                payload = MainC007Response(self.data).make()
-                return HeaderResponse(self.data).make(payload, "C007")
+                payload = MainC007Response(self._packet).make()
+                return HeaderResponse(self._packet).make(payload, "C007")
 
             case "400c":
-                payload = MainC00CResponse(self.data).make()
-                return HeaderResponse(self.data).make(payload, "C00C")
+                payload = MainC00CResponse(self._packet).make()
+                return HeaderResponse(self._packet).make(payload, "C00C")
 
             case "400d":
-                payload = MainC00DResponse(self.data).make()
-                return HeaderResponse(self.data).make(payload, "C00D")
+                payload = MainC00DResponse(self._packet).make()
+                return HeaderResponse(self._packet).make(payload, "C00D")
 
         return None
 
@@ -42,10 +43,10 @@ class Response:
         match protocol_id:
             case "2002":
                 payload = Request2002().make()
-                return HeaderResponse(self.data).make(payload, "2002")
+                return HeaderResponse(self._packet).make(payload, "2002")
 
             case "2001":
                 payload = Request2001().make()
-                return HeaderResponse(self.data).make(payload, "2001")
+                return HeaderResponse(self._packet).make(payload, "2001")
 
         return None

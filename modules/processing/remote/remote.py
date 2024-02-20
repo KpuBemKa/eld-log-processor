@@ -1,5 +1,7 @@
 import requests
 
+from modules.models.packet.packet import PacketModel
+
 REMOTE_LINK = "https://dev.hgrs.us/api/system/monitoring/v1/log/"
 
 
@@ -9,9 +11,9 @@ class Remote:
     def __init__(self) -> None:
         pass
 
-    def construct_from_packet(self, packet: dict, event_type, event_code) -> "Remote":
+    def construct_from_packet(self, packet: PacketModel, event_type, event_code) -> "Remote":
         return self.construct_data(
-            device_id=packet["header"]["device_id"],
+            device_id=packet.header.device_id,
             event_type=event_type,
             event_code=event_code,
             device_timestamp=self.__get_packet_timestamp(packet),
@@ -43,7 +45,7 @@ class Remote:
             "diagnostic_indicator": 0,
         }
         return self
-    
+
     def send(self):
         requests.post(
             REMOTE_LINK,
@@ -54,16 +56,16 @@ class Remote:
 
     def __get_packet_timestamp(self, packet):
         if "stat_data" in packet["payload"]:
-            return packet["payload"]["stat_data"]["UTC_Time"]
+            return packet.payload["stat_data"]["UTC_Time"]
 
         if "UTC_Time" in packet["payload"]:
-            return packet["payload"]["UTC_Time"]
+            return packet.payload["UTC_Time"]
 
         return None
 
     def __get_packet_mileage(self, packet):
         if "stat_data" in packet["payload"]:
-            return packet["payload"]["stat_data"]["current_trip_mileage"]
+            return packet.payload["stat_data"]["current_trip_mileage"]
 
         return None
 
@@ -73,12 +75,12 @@ class Remote:
     def __get_packet_longitude(self, packet):
         return self.__get_packet_geo(packet, "longitude")
 
-    def __get_packet_geo(self, packet, param):
-        if packet["header"]["protocol_id"] == "4009":
-            if "gps_item" in "payload"["payload"]:
-                return "payload"["payload"]["gps_item"][param]
+    def __get_packet_geo(self, packet: PacketModel, param: str) -> dict | None:
+        if packet.header.protocol_id == "4009":
+            if "gps_item" in packet.payload:
+                return packet.payload["gps_item"][param]
 
-        if "gps_data" in "payload"["payload"]:
-            return "payload"["payload"]["gps_data"]["gps_data"][0][param]
+        if "gps_data" in packet.payload:
+            return packet.payload["gps_data"]["gps_data"][0][param]
 
         return None

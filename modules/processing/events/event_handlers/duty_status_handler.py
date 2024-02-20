@@ -1,3 +1,4 @@
+from modules.models.packet.packet import PacketModel
 from .base_handler import BaseHandler
 
 from modules.models.enums.duty_status import DutyStatus
@@ -15,9 +16,9 @@ DUTY_EVENT_TYPE = 1
 
 class DutyStatusHandler(BaseHandler):
     _redis = RedisMain()
-    _data = None
+    _data: PacketModel
 
-    def handle(self, data) -> None:
+    def handle(self, data: PacketModel) -> None:
         self._data = data
 
         if not self.__is_status_packet() and not self.__is_alarm_packet():
@@ -42,13 +43,13 @@ class DutyStatusHandler(BaseHandler):
         ).send()
 
     def __is_alarm_packet(self):
-        return self._data["header"]["protocol_id"] == "4007"
+        return self._data.header.protocol_id == "4007"
 
     def __is_status_packet(self):
-        return self._data["header"]["protocol_id"] == "ffff"  # test protocol
+        return self._data.header.protocol_id == "ffff"  # test protocol
 
     def __is_speeding_raised(self):
-        for alarm_data in self._data["payload"]["alarm_data"]:
+        for alarm_data in self._data.payload["alarm_data"]:
             if alarm_data.alarm_type != "Speeding":
                 continue
 
@@ -63,8 +64,8 @@ class DutyStatusHandler(BaseHandler):
         self._redis.set_key(STATUS_HEADER + ":" + device_id, new_status)
 
     def __get_new_status(self, last_statuts):
-        if "duty status" in self._data["payload"]:
-            return self._data["payload"]["duty status"]
+        if "duty status" in self._data.payload:
+            return self._data.payload["duty status"]
 
         if not self.__is_speeding_raised():
             return None
@@ -75,7 +76,7 @@ class DutyStatusHandler(BaseHandler):
             return None
 
     def __get_device_id(self):
-        return self._data["header"]["device_id"]
+        return self._data.header.device_id
 
     def __get_event_code(self, new_status):
         match new_status:
@@ -96,8 +97,8 @@ class DutyStatusHandler(BaseHandler):
 
     def __start_inter_logging(self):
         ScheduleManager().add_inter_log_task(
-            task_name=self._data["header"]["device_id"],
+            device_id=self._data.header.device_id,
         )
 
     def __stop_inter_logging(self):
-        ScheduleManager().remove_inter_log_task(device_id=self._data["header"]["device_id"])
+        ScheduleManager().remove_inter_log_task(device_id=self._data.header.device_id)

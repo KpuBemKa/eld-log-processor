@@ -1,6 +1,6 @@
 class TrailerModel:
-    crc = None
-    protocol_tail = None
+    crc: int
+    protocol_tail: bytes
 
     def set(self, param, value):
         setattr(self, param, value)

@@ -1,14 +1,17 @@
+""" Decoder base class """
+
 from abc import ABC, abstractmethod
 
 
 class Decoder(ABC):
-    data = None
+    """ Decoder base class """
+    data: bytes
     model = None
     part = None
     position = 0
 
-    def move(self, p):
-        self.position += p
+    def move(self, pos):
+        self.position += pos
         return self.position
 
     @abstractmethod
@@ -23,16 +26,14 @@ class Decoder(ABC):
         return self
 
     def reverse_bytes(self):
-        self.part = "".join(
-            reversed([self.part[i : i + 2] for i in range(0, len(self.part), 2)])
-        )
+        self.part = "".join(reversed([self.part[i : i + 2] for i in range(0, len(self.part), 2)]))
         return self
 
     def hex_int(self, base=16):
         try:
             self.part = int(self.part, base)
-        except Exception as e:
-            print("Exception handled: ", e, e.args)
+        except (ValueError, TypeError) as ex:
+            print("ValueError exception handled: ", ex, ex.args)
 
         return self
 

@@ -1,14 +1,16 @@
-import redis
+from redis import Redis
+# import redis
+
 
 from modules.singleton_meta import SingletonMeta
 
 class RedisMain(metaclass=SingletonMeta):
-    redis = None
+    redis: Redis
     host = "localhost"
     port = 6379
 
     def __init__(self):
-        self.redis = redis.Redis(self.host, self.port, decode_responses=True)
+        self.redis = Redis(self.host, self.port, decode_responses=True)
         
     def set_key(self, key, value):
         self.redis.set(key, value)

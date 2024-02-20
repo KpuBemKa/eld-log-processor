@@ -1,4 +1,5 @@
 import socket
+from socket import socket as Socket
 import threading
 import time
 
@@ -13,14 +14,14 @@ PACKET_END = b"\x0D\x0A"  # \r\n
 
 class ConnectionManager:
     _addr = None
-    _connection: socket = None
+    _connection: Socket
 
     _data = bytearray(b"")
 
     _raw_packets = []
     _raw_packets_lock = threading.Lock()
 
-    def __init__(self, connection, addr) -> None:
+    def __init__(self, connection: Socket, addr) -> None:
         self._connection = connection
         self._addr = addr
 
@@ -34,10 +35,10 @@ class ConnectionManager:
 
             receiver_thread.join()
             processor_thread.join()
-        except socket.error as e:
-            print("Socket error: ", e, e.args)
-        except Exception as e:
-            print("Exception occured: ", e, e.args)
+        except socket.error as ex:
+            print("Socket error: ", ex, ex.args)
+        except Exception as ex:
+            print("Exception occured: ", ex, ex.args)
 
         self._connection.close()
         print("Connection on port `", self._addr, "` has been terminated.")

@@ -1,6 +1,9 @@
+from modules.models.packet.packet import PacketModel
+
+
 class MainC00DResponse:
-    def __init__(self, data):
+    def __init__(self, data: PacketModel):
         self.data = data
 
     def make(self):
-        return self.data["payload"]["ic_data"]
+        return self.data.payload["ic_data"]

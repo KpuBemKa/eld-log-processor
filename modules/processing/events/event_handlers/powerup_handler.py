@@ -1,3 +1,4 @@
+from modules.models.packet.packet import PacketModel
 from .base_handler import BaseHandler
 
 from modules.processing.redis.redis_realtime import RedisRealtime
@@ -13,7 +14,7 @@ POWERUP_EVENT_TYPE = 6
 class PowerupHandler(BaseHandler):
     _redis = RedisRealtime()
 
-    def handle(self, data) -> None:
+    def handle(self, data: PacketModel) -> None:
         self._data = data
 
         if not self.__is_alarm_packet():
@@ -30,10 +31,10 @@ class PowerupHandler(BaseHandler):
         ).send()
 
     def __is_alarm_packet(self):
-        return self._data["header"]["protocol_id"] == "4007"
+        return self._data.header.protocol_id == "4007"
 
     def __is_ignition_on(self):
-        for alarm_data in self._data["payload"]["alarm_data"]:
+        for alarm_data in self._data.payload["alarm_data"]:
             if alarm_data.alarm_type == "Ignition on":
                 return True
 
@@ -51,10 +52,10 @@ class PowerupHandler(BaseHandler):
 
     # def __make_message(self, is_ignition_on):
     #     if "GPS_Data" in self._data["payload"]:
-    #         gps_data = self._data["payload"]["stat_data"]["GPS_Data"]
+    #         gps_data = self._data.payload["stat_data"]["GPS_Data"]
     #     else:
     #         gps_data = ""
 
-    #     device_id = self._data["header"]["device_id"]
+    #     device_id = self._data.header.device_id
 
     #     return {}.extend([device_id.__dict__, is_ignition_on.__dict__, gps_data.__dict__])

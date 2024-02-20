@@ -1,6 +1,8 @@
+""" Singleton interface """
 from threading import Lock
 
 class SingletonMeta(type):
+    """ Singleton interface """
     _instances = {}
 
     _lock: Lock = Lock()

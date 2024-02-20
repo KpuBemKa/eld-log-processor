@@ -32,7 +32,7 @@ class Request2001:
     def make(self):
         payload = bytearray()
         payload += random.randint(0, 65535).to_bytes(4, "little")
-        payload += len(SETTINGS)
+        payload += len(SETTINGS).to_bytes(1, byteorder="little")
         payload += SETTINGS
 
-        return self.payload
+        return payload

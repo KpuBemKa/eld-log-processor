@@ -1,17 +1,18 @@
 import socket
+from socket import socket as Socket
 import threading
 
-from conn_manager import ConnectionManager
+from .conn_manager import ConnectionManager
 
 
 class TCPServer:
-    socket = ""
+    socket: Socket
     connection = ""
     host = "192.168.50.198"
     port = 49810
 
     def __init__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = Socket(socket.AF_INET, socket.SOCK_STREAM)
         # host = socket.gethostname()
         self.socket.bind((self.host, self.port))
         self.socket.listen(100000)

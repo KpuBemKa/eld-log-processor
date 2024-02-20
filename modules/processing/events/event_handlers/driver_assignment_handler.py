@@ -1,3 +1,4 @@
+from modules.models.packet.packet import PacketModel
 from .base_handler import BaseHandler
 
 from modules.processing.redis.redis_realtime import RedisRealtime
@@ -10,14 +11,14 @@ DRIVER_ASSIGN_EVENT_TYPE = 5
 class DriverAssignmentHandler(BaseHandler):
     _redis = RedisRealtime()
 
-    def handle(self, data) -> None:
+    def handle(self, data: PacketModel) -> None:
         self._data = data
 
         driver_id = self.__get_driver_id_from_data()
         if not driver_id:
             return
 
-        device_id = self._data["header"]["device_id"]
+        device_id = self._data.header.device_id
         if not self.__has_driver_changed(device_id, driver_id):
             return
         self.__update_driver(device_id, driver_id)
@@ -30,13 +31,13 @@ class DriverAssignmentHandler(BaseHandler):
         return self._redis.get_key(DRIVER_KEY_HEADER + ":" + device_id)
 
     def __get_driver_id_from_data(self):
-        protocol_id = self._data["header"]["protocol_id"]
+        protocol_id = self._data.header.protocol_id
 
         if protocol_id == "400C":
-            return self._data["payload"]["card_id"]
+            return self._data.payload["card_id"]
 
         if protocol_id == "400D":
-            return self._data["payload"]["ic_data"]
+            return self._data.payload["ic_data"]
 
         return None
 

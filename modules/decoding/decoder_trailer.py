@@ -1,36 +1,34 @@
-from decoder import Decoder
+""" Protocol trailer/footer/tail/end decoder """
 
-from modules.models.protocols.trailer import TrailerModel
+import struct
+
+from modules.models.packet.trailer import TrailerModel
+from .decoder import Decoder
+
+
+# https://docs.python.org/3/library/struct.html
+TRAILER_UNPACK_STR = "<HH"
 
 
 class TrailerDecoder(Decoder):
-    items = {
-        "crc": [-4, -2],
-        "protocol_tail": [-2],
-    }
+    """Protocol trailer/footer/tail/end decoder"""
+
+    _data: bytes
+    _model: TrailerModel = TrailerModel()
 
     def __init__(self, data: bytes):
-        self.data = data
-        self.model = TrailerModel()
+        self._data = data
 
     def decode(self):
-        for item in self.items:
-            data = self.get_data_part(item)
+        (crc, tail) = struct.unpack_from(TRAILER_UNPACK_STR, self._data, len(self._data) - 4)
 
-            data = data.hex()
-
-            self.model.set(item, data)
+        self._model.crc = int.from_bytes(crc, byteorder="little")
+        self._model.protocol_tail = tail
 
         return self
 
-    def get_data_part(self, item):
-        if len(self.items[item]) == 1:
-            return self.data[self.items[item][0] :]
-
-        return self.data[self.items[item][0] : self.items[item][1]]
-
-    def get_model(self):
+    def get_model(self) -> TrailerModel:
         """
         Returns trailer model as a dictionary
         """
-        return self.model.__dict__
+        return self._model

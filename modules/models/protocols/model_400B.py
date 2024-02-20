@@ -1,6 +1,6 @@
 class Protocol400BModel:
-    fault_flag = None
-    fault_count = None
+    fault_flag: dict[int, str] = {}
+    fault_count: int = 0
     fault_type_array = []
     mil_status = None
 

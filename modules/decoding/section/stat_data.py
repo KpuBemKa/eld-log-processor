@@ -1,6 +1,5 @@
-from ..decoder import Decoder
+from modules.decoding.decoder import Decoder
 from modules.models.enums.stat_data_reserved import StatDataReservedEnum
-
 from modules.models.protocols.stat_data import StatData
 
 
@@ -12,7 +11,7 @@ class StatDataDecoder(Decoder):
     def decode(self):
         (
             self.last_accon_time()
-            .UTC_Time()
+            .utc_time()
             .total_trip_mileage()
             .current_trip_mileage()
             .total_fuel()
@@ -29,7 +28,7 @@ class StatDataDecoder(Decoder):
         )
         return self
 
-    def UTC_Time(self):
+    def utc_time(self):
         self.model.set(
             "UTC_Time", self.set_part(self.data[4:8]).to_hex().reverse_bytes().hex_int().get_part()
         )

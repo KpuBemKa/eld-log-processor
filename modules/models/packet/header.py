@@ -1,9 +1,10 @@
 class HeaderModel:
-    protocol_head = None
-    protocol_length = None
-    protocol_version = None
-    device_id = None
-    protocol_id = None
+    protocol_head: bytes
+    protocol_length: int
+    protocol_version: str
+    device_id: str
+    device_bin_id: bytearray
+    protocol_id: str
 
     def set(self, param, value):
         setattr(self, param, value)

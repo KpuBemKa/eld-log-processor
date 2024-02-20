@@ -1,11 +1,14 @@
-from ..decoder import Decoder
+""" Alarm data parser """
+
+from modules.decoding.decoder import Decoder
 from modules.models.enums.alarm_data.new_alarm_flag import AlarmNewFlagEnum
 from modules.models.enums.alarm_data.alarm_type import AlarmTypeEnum
-
 from modules.models.protocols.alarm_model import Alarm_Model
 
 
 class AlarmDataDecoder(Decoder):
+    """Alarm data parser"""
+
     def __init__(self, data, start=0):
         self.model = Alarm_Model()
         self.data = data[start:]
@@ -26,14 +29,10 @@ class AlarmDataDecoder(Decoder):
             model = self.model.new_alarm_data()
 
             model.new_alarm_flag = AlarmNewFlagEnum().get(
-                self.set_part(self.data[self.position : self.move(1)])
-                .to_hex()
-                .get_part()
+                self.set_part(self.data[self.position : self.move(1)]).to_hex().get_part()
             )
             model.alarm_type = AlarmTypeEnum().get(
-                self.set_part(self.data[self.position : self.move(1)])
-                .to_hex()
-                .get_part()
+                self.set_part(self.data[self.position : self.move(1)]).to_hex().get_part()
             )
             model.alarm_description = (
                 self.set_part(self.data[self.position : self.move(2)])
