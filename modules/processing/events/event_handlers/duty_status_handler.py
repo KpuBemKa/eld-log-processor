@@ -5,7 +5,7 @@ from modules.models.enums.duty_status import DutyStatus
 from modules.processing.persist.persistence import Persistence
 from modules.processing.redis.redis_main import RedisMain
 from modules.processing.persist.inter_log_sender import ScheduleManager
-from modules.processing.storage.gps_handler import GPS_DATA_HEADER
+# from modules.processing.storage.gps_handler import GPS_DATA_HEADER
 # from modules.processing.events.event_handlers.driver_handler import DriverAssignmentHandler
 
 STATUS_HEADER = "eld:driver_status"

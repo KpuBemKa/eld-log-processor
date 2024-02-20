@@ -15,14 +15,18 @@ TODO event types:
     PC/YM Cleared
 ] -> unknown duty status protocol
 
-- Power data diagnostic set & Power data diagnostic cleared
-
-- ELD malfunction & ELD Malfunction cleared
++ ELD malfunction & ELD malfunction cleared -> unknown ELD malfunction protocol
 
 
-Done event types:
+Done but not tested:
 - Engine Power-up & Shut-down (always marked as with max location precision)
+
 - Intermediate log once per hour of DRIVING status active (always marked as with max location precision)
+
+- Vehicle malfunction & Vehicle malfunction cleared
+
+
+Done and tested:
 
 
 """
