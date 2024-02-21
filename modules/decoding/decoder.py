@@ -4,7 +4,8 @@ from abc import ABC, abstractmethod
 
 
 class Decoder(ABC):
-    """ Decoder base class """
+    """Decoder base class"""
+
     data: bytes
     model = None
     part = None
@@ -15,10 +16,10 @@ class Decoder(ABC):
         return self.position
 
     @abstractmethod
-    def decode(self):
+    def decode(self) -> "Decoder":
         pass
 
-    def get_model(self):
+    def get_model(self) -> dict:
         return self.model.__dict__
 
     def set_part(self, part):

@@ -1,14 +1,12 @@
 class GPS_Model:
-
     class GPS_Data:
-        date = {}
-        time = {}
-        latitude = None
-        longitude = None
-        speed = None
-        direction = None
-        flag = None
-
+        date: dict[str, int]
+        time: dict[str, int]
+        latitude: float
+        longitude: float
+        speed: float  # mph
+        direction: int  # milli-degrees
+        flag: dict[str, str]
 
     def __init__(self):
         self.gps_count = 0

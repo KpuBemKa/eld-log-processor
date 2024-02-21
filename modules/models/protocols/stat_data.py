@@ -1,12 +1,12 @@
 class StatData:
-    last_accon_time = False
-    UTC_Time = False
-    total_trip_mileage = False
-    current_trip_mileage = False
-    total_fuel = False
-    current_fuel = False
-    vstate = {}
-    reserved = False
+    last_accon_time: int
+    utc_time: int
+    total_trip_mileage: int
+    current_trip_mileage: int
+    total_fuel: int
+    current_fuel: int
+    vstate: dict[str, bool]
+    reserved: dict[str, str]
 
     def set(self, param, value):
         setattr(self, param, value)

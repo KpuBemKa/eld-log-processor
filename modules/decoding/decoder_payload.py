@@ -1,6 +1,6 @@
 """ Protocol payload decoder """
 
-import sys
+# import sys
 
 from .decoder import Decoder
 from .payload.decoder_1001 import Protocol1001Decoder
@@ -25,40 +25,40 @@ class PayloadDecoder(Decoder):
 
         match self.protocol:
             case "1001":
-                self.protocol_1001()
+                self.__decode_payload(Protocol1001Decoder(self.data))
 
             case "1002":
-                self.protocol_1002()
+                self.__decode_payload(Protocol1002Decoder(self.data))
 
             case "1003":
                 pass
 
             case "4007":
-                self.protocol_4007()
+                self.__decode_payload(Protocol4007Decoder(self.data))
 
             case "a002":
                 pass
 
             case "4001":
-                self.protocol_4001()
+                self.__decode_payload(Protocol4001Decoder(self.data))
 
             case "400B":
-                self.protocol_400b()
+                self.__decode_payload(Protocol400BDecoder(self.data))
 
             case "4002":
                 pass
 
             case "4008":
-                self.protocol_4008()
+                self.__decode_payload(Protocol4008Decoder(self.data))
 
             case "4009":
-                self.protocol_4009()
+                self.__decode_payload(Protocol4009Decoder(self.data))
 
             case "4011":
-                self.protocol_4001()
+                self.__decode_payload(Protocol4001Decoder(self.data))
 
             case "401E":
-                self.protocol_401e()
+                pass
 
             case "401F":
                 pass
@@ -68,40 +68,86 @@ class PayloadDecoder(Decoder):
 
             case _:
                 pass
+        
+        # match self.protocol:
+        #     case "1001":
+        #         self.protocol_1001()
+
+        #     case "1002":
+        #         self.protocol_1002()
+
+        #     case "1003":
+        #         pass
+
+        #     case "4007":
+        #         self.protocol_4007()
+
+        #     case "a002":
+        #         pass
+
+        #     case "4001":
+        #         self.protocol_4001()
+
+        #     case "400B":
+        #         self.protocol_400b()
+
+        #     case "4002":
+        #         pass
+
+        #     case "4008":
+        #         self.protocol_4008()
+
+        #     case "4009":
+        #         self.protocol_4009()
+
+        #     case "4011":
+        #         self.protocol_4001()
+
+        #     case "401E":
+        #         self.protocol_401e()
+
+        #     case "401F":
+        #         pass
+
+        #     case "4020":
+        #         pass
+
+        #     case _:
+        #         pass
 
         return self
 
-    def protocol_1001(self):
-        self.result = Protocol1001Decoder(self.data).decode().get_result()
+    # def protocol_1001(self):
+    #     self.result = Protocol1001Decoder(self.data).decode().get_result()
 
-    def protocol_1002(self):
-        self.result = Protocol1002Decoder(self.data).decode().get_result()
+    # def protocol_1002(self):
+    #     self.result = Protocol1002Decoder(self.data).decode().get_result()
 
-    def protocol_4001(self):
-        self.result = Protocol4001Decoder(self.data).decode().get_result()
+    # def protocol_4001(self):
+    #     self.result = Protocol4001Decoder(self.data).decode().get_result()
 
-    def protocol_4007(self):
-        self.result = Protocol4007Decoder(self.data).decode().get_result()
+    # def protocol_4007(self):
+    #     self.result = Protocol4007Decoder(self.data).decode().get_result()
 
-    def protocol_400b(self):
-        self.result = Protocol400BDecoder(self.data).decode().get_result()
+    # def protocol_400b(self):
+    #     self.result = Protocol400BDecoder(self.data).decode().get_result()
 
-    def protocol_4008(self):
-        self.result = Protocol4008Decoder(self.data).decode().get_result()
+    # def protocol_4008(self):
+    #     self.result = Protocol4008Decoder(self.data).decode().get_result()
 
-    def protocol_4009(self):
-        self.result = Protocol4009Decoder(self.data).decode().get_result()
+    # def protocol_4009(self):
+    #     self.result = Protocol4009Decoder(self.data).decode().get_result()
 
-    def protocol_a002(self):
-        # self.result =
-        pass
+    # def protocol_a002(self):
+    #     # self.result =
+    #     pass
 
-    def protocol_401e(self):
-        # self.result =
-        pass
-
-    def exit(self):
-        sys.exit()
+    # def protocol_401e(self):
+    #     # self.result =
+    #     pass
 
     def get_result(self):
         return self.result
+
+    def __decode_payload(self, decoder: Decoder) -> None:
+        self.result = decoder.decode().get_result()

@@ -1,6 +1,49 @@
+import struct
 from modules.decoding.decoder import Decoder
 from modules.models.enums.stat_data_reserved import StatDataReservedEnum
 from modules.models.protocols.stat_data import StatData
+
+
+# https://docs.python.org/3/library/struct.html
+STAT_UNPACK_STR = "<" + "II" + "II" + "IH" + "I" + "8s"
+
+VSTATE_PARAMS = [
+    "low_voltage",  # 0
+    "towing",  # 1
+    "speeding",  # 2
+    "high_engine_coolant_temperature",  # 3
+    "hard_acceleration",  # 4
+    "hard_deceleration",  # 5
+    "idle_engine",  # 6
+    "exhaust_emission",  # 7
+    #
+    "high_rpm",  # 0
+    "power_on",  # 1
+    "quick_lane_change",  # 2
+    "sharp_turn",  # 3
+    "fatigue_driving",  # 4
+    "emergency",  # 5
+    "crash",  # 6
+    "tamper",  # 7
+    #
+    "illegal_enter",  # 0
+    "illegal_ignition",  # 1
+    "ignition_on",  # 2
+    "gps_antenna_alarm",  # 3
+    "no_gps_device",  # 4
+    "power-off",  # 5
+    "pull_out/rollover",  # 6
+    "mil",  # 7
+    #
+    "reserved",  # 0
+    "temperature",  # 1
+    "door_2_state",  # 2
+    "door_1_state",  # 3
+    "vibration",  # 4
+    "dangerous_driving",  # 5
+    "no_card_presented",  # 6
+    "unlock",  # 7
+]
 
 
 class StatDataDecoder(Decoder):
@@ -10,140 +53,50 @@ class StatDataDecoder(Decoder):
 
     def decode(self):
         (
-            self.last_accon_time()
-            .utc_time()
-            .total_trip_mileage()
-            .current_trip_mileage()
-            .total_fuel()
-            .current_fuel()
-            .vstate()
-            .reserved()
-        )
+            last_accon_time,
+            utc_time,
+            total_trip_mileage,
+            current_trip_mileage,
+            total_fuel,
+            current_fuel,
+            vstate,
+            reserved,
+        ) = struct.unpack(STAT_UNPACK_STR, self.data)
+
+        self.model.last_accon_time = last_accon_time
+        self.model.utc_time = utc_time
+        self.model.total_trip_mileage = total_trip_mileage
+        self.model.current_trip_mileage = current_trip_mileage
+        self.model.total_fuel = total_fuel
+        self.model.current_fuel = current_fuel
+        self.model.vstate = self.__parse_vstate(vstate)
+        self.model.reserved = self.__parse_reserved(reserved)
+
         return self
 
-    def last_accon_time(self):
-        self.model.set(
-            "last_accon_time",
-            self.set_part(self.data[:4]).to_hex().reverse_bytes().hex_int().get_part(),
-        )
-        return self
-
-    def utc_time(self):
-        self.model.set(
-            "UTC_Time", self.set_part(self.data[4:8]).to_hex().reverse_bytes().hex_int().get_part()
-        )
-        return self
-
-    def total_trip_mileage(self):
-        self.model.set(
-            "total_trip_mileage",
-            self.set_part(self.data[8:12]).to_hex().reverse_bytes().hex_int().get_part(),
-        )
-        return self
-
-    def current_trip_mileage(self):
-        self.model.set(
-            "current_trip_mileage",
-            self.set_part(self.data[12:16]).to_hex().reverse_bytes().hex_int().get_part(),
-        )
-        return self
-
-    def total_fuel(self):
-        self.model.set(
-            "total_fuel",
-            self.set_part(self.data[16:20]).to_hex().reverse_bytes().hex_int().get_part(),
-        )
-        return self
-
-    def current_fuel(self):
-        self.model.set(
-            "current_fuel",
-            self.set_part(self.data[20:22]).to_hex().reverse_bytes().hex_int().get_part(),
-        )
-        return self
-
-    def vstate(self):
-        result = {}
-
-        stage = self.set_part(self.data[22:23]).to_hex().hex_int().to_bin().get_part()
-        params = {
-            0: "exhaust_emission",
-            1: "idle_engine",
-            2: "hard_deceleration",
-            3: "hard_acceleration",
-            4: "high_engine_coolant_temperature",
-            5: "speeding",
-            6: "towing",
-            7: "low_voltage",
+    def __parse_reserved(self, values: bytes) -> dict[str, str]:
+        return {
+            "engine_diagnose_protocol": StatDataReservedEnum().get_engine_diagnose_protocol(
+                values[0]
+            ),
+            "vehicle_voltage": str(values[1]),
+            "network_frequency": StatDataReservedEnum().get_network_frequency(values[2]),
+            "hardware_code": str((values[3] & (0b11110000)) >> 4),  # higher 4 bits
+            "cellular_module_code": str(values[3] & (0b00001111)),  # lower 4 bits,
+            "cellular_signal-strength": str(values[4]),
+            "ber_of_cellular_communication": str(values[5]),
+            "system_status_indication": values[-2:].hex(), # last 2 bytes
         }
-        result.update(self.vstate_setter(params, stage))
 
-        stage = self.set_part(self.data[23:24]).to_hex().hex_int().to_bin().get_part()
-        params = {
-            0: "tamper",
-            1: "crash",
-            2: "emergency",
-            3: "fatigue_driving",
-            4: "sharp_turn",
-            5: "quick_lane_change",
-            6: "power_on",
-            7: "high_rpm",
-        }
-        result.update(self.vstate_setter(params, stage))
+    def __parse_vstate(self, vstate: int) -> dict[str, bool]:
+        result: dict[str, bool] = {}
 
-        stage = self.set_part(self.data[24:25]).to_hex().hex_int().to_bin().get_part()
-        params = {
-            0: "mil",
-            1: "pull_out/rollover",
-            2: "power-off",
-            3: "no_gps_device",
-            4: "gps_antenna_alarm",
-            5: "ignition_on",
-            6: "illegal_ignition",
-            7: "illegal_enter",
-        }
-        result.update(self.vstate_setter(params, stage))
-
-        stage = self.set_part(self.data[24:25]).to_hex().hex_int().to_bin().get_part()
-        params = {
-            0: "reserved",
-            1: "temperature",
-            2: "door_2_state",
-            3: "door_1_state",
-            4: "vibration",
-            5: "dangerous_driving",
-            6: "no_card_presented",
-            7: "unlock",
-        }
-        result.update(self.vstate_setter(params, stage))
-
-        self.model.set("vstate", result)
-
-        return self
-
-    def vstate_setter(self, items, stage):
-        result = {}
-        for index in items:
-            result[items[index]] = stage[index]
+        i = 0
+        for param in VSTATE_PARAMS:
+            result[param] = bool(self.__get_bit(vstate, i))
+            i += 1
 
         return result
 
-    def reserved(self):
-        result = {  # noqa: F841
-            "engine_diagnose_protocol": StatDataReservedEnum().get_engine_diagnose_protocol(
-                self.set_part(self.data[26:27]).to_hex().get_part()
-            ),
-            "vehicle_voltage": self.set_part(self.data[27:28]).to_hex().hex_int().get_part() * 0.1
-            + 8,
-            "network_frequency": StatDataReservedEnum().get_network_frequency(
-                self.set_part(self.data[26:27]).to_hex().get_part()
-            ),
-            "hardware_code": self.set_part(self.data[29:30]).to_hex().get_part()[0],
-            "cellular_module_code": self.set_part(self.data[29:30]).to_hex().get_part()[1],
-            "cellular_signal-strength": self.set_part(self.data[30:31]).to_hex().get_part(),
-            "ber_of_cellular_communication": self.set_part(self.data[31:32]).to_hex().get_part(),
-            "system_status_indication": self.set_part(self.data[32:34]).to_hex().get_part(),
-        }
-
-    def get_position(self):
-        return 34
+    def __get_bit(self, source: int, position: int):
+        return source & (1 << position)
