@@ -22,7 +22,7 @@ class GPSDataDecoder(Decoder):
         return self
 
     def gps_count(self) -> "GPSDataDecoder":
-        self.model.gps_count = int.from_bytes(self.data[0 : self.move(1)])
+        self.model.gps_count = int.from_bytes(self.data[0 : self.move(1)], byteorder="little")
         return self
 
     def gps_data(self):

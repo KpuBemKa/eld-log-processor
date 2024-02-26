@@ -150,4 +150,4 @@ class PayloadDecoder(Decoder):
         return self.result
 
     def __decode_payload(self, decoder: Decoder) -> None:
-        self.result = decoder.decode().get_result()
+        self.result = decoder.decode().get_model()
