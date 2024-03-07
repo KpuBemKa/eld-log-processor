@@ -8,7 +8,7 @@ from .conn_manager import ConnectionManager
 class TCPServer:
     socket: Socket
     connection = ""
-    host = "192.168.50.198"
+    host = "192.168.50.193"
     port = 49810
 
     def __init__(self):
@@ -16,6 +16,7 @@ class TCPServer:
         # host = socket.gethostname()
         self.socket.bind((self.host, self.port))
         self.socket.listen(100000)
+        
         print(self.host, self.port)
 
     def run(self):

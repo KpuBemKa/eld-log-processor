@@ -1,7 +1,7 @@
 import sched
 import time
 
-from remote import Remote
+from .remote import Remote
 
 from modules.singleton_meta import SingletonMeta
 

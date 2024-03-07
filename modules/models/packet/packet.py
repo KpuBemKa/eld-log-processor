@@ -1,5 +1,5 @@
-from header import HeaderModel
-from trailer import TrailerModel
+from .header import HeaderModel
+from .trailer import TrailerModel
 
 
 class PacketModel:

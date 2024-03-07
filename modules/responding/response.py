@@ -1,13 +1,13 @@
 from modules.models.packet.packet import PacketModel
 
-from response_1001 import Main1001Response
-from response_C007 import MainC007Response
-from response_C00C import MainC00CResponse
-from response_C00D import MainC00DResponse
+from .response_1001 import Main1001Response
+from .response_C007 import MainC007Response
+from .response_C00C import MainC00CResponse
+from .response_C00D import MainC00DResponse
 
-from request_2001 import Request2001
-from request_2002 import Request2002
-from header import HeaderResponse
+from .request_2001 import Request2001
+from .request_2002 import Request2002
+from .header import HeaderResponse
 
 
 class Response:

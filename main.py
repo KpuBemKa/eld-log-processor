@@ -1,7 +1,7 @@
 """
 
 TODO event types:
-- Driver assignment -> uknown assignment protocol 
+- Driver assignment -> uknown assignment protocol
 
 - Driver status: [
     Driving,
@@ -30,26 +30,26 @@ Done and tested:
 
 """
 
-# import multiprocessing
-# from modules.tcp_server.server import TCPServer
+import multiprocessing
+from modules.tcp_server.server import TCPServer
 
 
-# def main():
-#     """Entry point"""
+def main():
+    """Entry point"""
 
-#     server = TCPServer()
+    server = TCPServer()
 
-#     p = multiprocessing.Process(target=server.run, daemon=True)
-#     p.start()
-#     p.join()
+    p = multiprocessing.Process(target=server.run, daemon=True)
+    p.start()
+    p.join()
 
-#     # while True:
-#     #     pass
+    # while True:
+    #     pass
 
 
-# if __name__ == "__main__":
-#     # main()
-#     pass
+if __name__ == "__main__":
+    main()
+    # pass
 
 # from modules.decoding.section.gps_data import GPSDataDecoder
 

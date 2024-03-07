@@ -1,6 +1,6 @@
 from modules.models.packet.packet import PacketModel
 
-from response import Response
+from .response import Response
 
 
 class ResponseMaker:

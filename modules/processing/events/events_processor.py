@@ -1,7 +1,8 @@
-from event_handlers.base_handler import BaseHandler
-from event_handlers.driver_assignment_handler import DriverAssignmentHandler
-from event_handlers.duty_status_handler import DutyStatusHandler
-from event_handlers.powerup_handler import PowerupHandler
+from .event_handlers.base_handler import BaseHandler
+from .event_handlers.driver_assignment_handler import DriverAssignmentHandler
+from .event_handlers.duty_status_handler import DutyStatusHandler
+from .event_handlers.powerup_handler import PowerupHandler
+
 from modules.models.packet.packet import PacketModel
 # from ..storage.gps_handler import GpsHandler
 # from .event_handlers.driving_handler import DrivingHandler
