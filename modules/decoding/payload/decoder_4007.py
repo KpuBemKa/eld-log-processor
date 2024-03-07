@@ -1,7 +1,7 @@
-from ..decoder import Decoder
-from ..section.stat_data import StatDataDecoder
-from ..section.gps_data import GPSDataDecoder
-from ..section.alarm_data import AlarmDataDecoder
+from modules.decoding.decoder import Decoder
+from modules.decoding.section.stat_data import StatDataDecoder
+from modules.decoding.section.gps_data import GPSDataDecoder
+from modules.decoding.section.alarm_data import AlarmDataDecoder
 
 from modules.models.protocols.model_4007 import Protocol4007Model
 
@@ -32,7 +32,9 @@ class Protocol4007Decoder(Decoder):
         return self
 
     def protocol_data_one(self):
-        self.model.alarm_seq = self.data[self.position : self.move(4)]
+        self.model.alarm_seq = int.from_bytes(
+            self.data[self.position : self.move(4)], byteorder="little"
+        )
 
         return self
 

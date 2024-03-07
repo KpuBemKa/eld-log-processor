@@ -1,15 +1,20 @@
 """ Alarm data parser """
 
+import struct
 from modules.decoding.decoder import Decoder
 from modules.models.enums.alarm_data.new_alarm_flag import AlarmNewFlagEnum
 from modules.models.enums.alarm_data.alarm_type import AlarmTypeEnum
 from modules.models.protocols.alarm_model import Alarm_Model
 
 
+ALARM_UNPACK_STR = "<" + "BBHH"
+DATA_SIZE = 6
+
+
 class AlarmDataDecoder(Decoder):
     """Alarm data parser"""
 
-    def __init__(self, data, start=0):
+    def __init__(self, data: bytes, start=0):
         self.model = Alarm_Model()
         self.data = data[start:]
         self.position = 0
@@ -19,33 +24,24 @@ class AlarmDataDecoder(Decoder):
         return self
 
     def alarm_count(self):
-        self.model.alarm_count = (
-            self.set_part(self.data[0 : self.move(1)]).to_hex().hex_int().get_part()
-        )
+        self.model.alarm_count = self.data[0]
+        self.move(1)
         return self
 
     def alarm_data(self):
         for _ in range(self.model.alarm_count):
             model = self.model.new_alarm_data()
 
-            model.new_alarm_flag = AlarmNewFlagEnum().get(
-                self.set_part(self.data[self.position : self.move(1)]).to_hex().get_part()
+            raw_data = self.data[self.position : self.move(DATA_SIZE)]
+
+            (alarm_flag, alarm_type, alarm_desc, alarm_thr) = struct.unpack(
+                ALARM_UNPACK_STR, raw_data
             )
-            model.alarm_type = AlarmTypeEnum().get(
-                self.set_part(self.data[self.position : self.move(1)]).to_hex().get_part()
-            )
-            model.alarm_description = (
-                self.set_part(self.data[self.position : self.move(2)])
-                .to_hex()
-                .reverse_bytes()
-                .get_part()
-            )
-            model.alarm_threshold = (
-                self.set_part(self.data[self.position : self.move(2)])
-                .to_hex()
-                .reverse_bytes()
-                .get_part()
-            )
+
+            model.new_alarm_flag = AlarmNewFlagEnum().get(alarm_flag)
+            model.alarm_type = AlarmTypeEnum().get(alarm_type)
+            model.alarm_description = alarm_desc
+            model.alarm_threshold = alarm_thr
 
             self.model.add_alarm_data(model.__dict__)
 

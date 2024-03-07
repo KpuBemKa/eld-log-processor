@@ -7,7 +7,7 @@ class ProtocolA002Model:
     success_count = None
     success_tlv_array = []
 
-    class TLV_Model:
+    class TlvItem:
         tag = None
         length = None
         value_array = None
@@ -16,7 +16,7 @@ class ProtocolA002Model:
         setattr(self, param, value)
 
     def new_tlv_data(self):
-        return self.TLV_Model()
+        return self.TlvItem()
 
     def add_fail_tlv_data(self, item):
         self.fail_tag_array.append(item)

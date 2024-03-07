@@ -1,6 +1,6 @@
-from ..decoder import Decoder
-from ..section.stat_data import StatDataDecoder
-from ..section.gps_data import GPSDataDecoder
+from modules.decoding.decoder import Decoder
+from modules.decoding.section.stat_data import StatDataDecoder
+from modules.decoding.section.gps_data import GPSDataDecoder
 
 
 class Protocol1002Decoder(Decoder):

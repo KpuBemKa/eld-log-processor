@@ -63,14 +63,17 @@ class GPSDataDecoder(Decoder):
 
             model.direction = direction
 
-            model.flag = self.gps_flag(flag)
+            model.flag = self.__parse_gps_flag(flag)
 
             self.model.add_gps_data(model.__dict__)
 
             self.move(19)
         return self
 
-    def gps_flag(self, flag: int):
+    def get_position(self):
+        return self.position
+
+    def __parse_gps_flag(self, flag: int):
         # int -> string binary representation -> strip leading '0b' ->
         # fill the string to have 8 symbols -> reverse the string
         flags = bin(flag)[2:].zfill(8)[::-1]
@@ -98,9 +101,6 @@ class GPSDataDecoder(Decoder):
             response["fix"] = "3D fix"
 
         return response
-
-    def get_position(self):
-        return self.position
 
     def __unpack(self, raw_data) -> tuple[int, int, int, int, int, int, int, int, int, int, int]:
         return struct.unpack(GPS_UNPACK_STR, raw_data)

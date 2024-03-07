@@ -9,7 +9,7 @@ class Decoder(ABC):
     data: bytes
     model = None
     part = None
-    position = 0
+    position: int = 0
 
     def move(self, pos):
         self.position += pos

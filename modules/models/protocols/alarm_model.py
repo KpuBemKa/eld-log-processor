@@ -1,9 +1,9 @@
 class Alarm_Model:
     class Alarm_Data:
-        new_alarm_flag = None
-        alarm_type = None
-        alarm_description = None
-        alarm_threshold = None
+        new_alarm_flag: dict[int, str]
+        alarm_type: dict[int, str]
+        alarm_description: int
+        alarm_threshold: int
 
     def __init__(self):
         self.alarm_count = 0

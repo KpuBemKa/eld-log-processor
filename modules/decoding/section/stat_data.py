@@ -6,6 +6,7 @@ from modules.models.protocols.stat_data import StatData
 
 # https://docs.python.org/3/library/struct.html
 STAT_UNPACK_STR = "<" + "II" + "II" + "IH" + "I" + "8s"
+STAT_SIZE = 34
 
 VSTATE_PARAMS = [
     "low_voltage",  # 0
@@ -50,8 +51,10 @@ class StatDataDecoder(Decoder):
     def __init__(self, data, start=0):
         self.model = StatData()
         self.data = data[start:]
+        self.position = 0
 
     def decode(self):
+        raw_data = self.data[self.position : self.move(STAT_SIZE)]
         (
             last_accon_time,
             utc_time,
@@ -61,7 +64,7 @@ class StatDataDecoder(Decoder):
             current_fuel,
             vstate,
             reserved,
-        ) = struct.unpack(STAT_UNPACK_STR, self.data)
+        ) = struct.unpack(STAT_UNPACK_STR, raw_data)
 
         self.model.last_accon_time = last_accon_time
         self.model.utc_time = utc_time
@@ -74,6 +77,9 @@ class StatDataDecoder(Decoder):
 
         return self
 
+    def get_position(self):
+        return self.position
+
     def __parse_reserved(self, values: bytes) -> dict[str, str]:
         return {
             "engine_diagnose_protocol": StatDataReservedEnum().get_engine_diagnose_protocol(
@@ -85,7 +91,7 @@ class StatDataDecoder(Decoder):
             "cellular_module_code": str(values[3] & (0b00001111)),  # lower 4 bits,
             "cellular_signal-strength": str(values[4]),
             "ber_of_cellular_communication": str(values[5]),
-            "system_status_indication": values[-2:].hex(), # last 2 bytes
+            "system_status_indication": values[-2:].hex(),  # last 2 bytes
         }
 
     def __parse_vstate(self, vstate: int) -> dict[str, bool]:
